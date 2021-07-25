@@ -1,0 +1,95 @@
+#katanacenter {
+    width: 50%;  
+    height: 20%;  
+    display: block;
+    margin: 0 auto;
+}
+
+#katanaheading {
+    text-shadow:1px 0 0 rgb(221, 155, 196);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.mylabel {
+    width: 80px;
+    display: inline-block;
+    font-weight: bold;
+    text-align: right;
+}
+
+.msg-err {
+    font-size: 0.8em;
+    color: darkred;
+    font-weight: bold;
+    margin-left: 105px;
+}
+
+.popup {
+    background-color: rgb(255, 221, 246);
+}
+
+.popup p {
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.popup p.aviso {
+    color:green;
+}
+
+.popup p.error {
+    color:darkred
+}
+
+.btn {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: darkred
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-image: url("../images/cherry_blossom2.png");
+}
+
+li {
+float: left;
+}
+
+li a {
+display: block;
+color: white;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
+}
+
+li a:hover {
+background-color: rgb(247, 188, 222);
+}
+
+.isDisabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+.isDisabled > a {
+    color: currentColor;
+    display: inline-block;
+    pointer-events: none;
+    text-decoration: none;
+}
+
+.isActive{
+    opacity: 1;
+}
+.isActive > a {
+    color: currentColor;
+    display: inline-block;
+}
+
+.katanabutton {
+    position: relative;
+}

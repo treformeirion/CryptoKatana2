@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}CryptoKatana{% endblock %}
+
+{% block content %}
+<nav class="shadowed nav" >
+    <ul>
+        <li><span class="isDisabled"><a href="/movements">Transactions</a></span</li>
+        <li><span class="isActive"><a href="/purchase">Purchase</a></span</li>
+        <li><span class="isActive"><a href="/investment">Investment</a></span</li>
+    </ul>
+  </nav>
+  <div class="container"></div>
+    <h1 class="katanaheading">CK Transactions</h1>
+    <!--Table headers for each field in database-->
+    <table>
+        <thead>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Ccy From</th>
+            <th>QTY From</th>
+            <th>Ccy To</th>
+            <th>QTY To</th>
+            <th>U. P.</th>
+        </thead>
+        {% for movement in data %}
+            {% if not movement %}
+                {{ no_movement_message }}
+            {% else %}
+                <tr>
+                    <td>{{ movement.date }}</td>
+                    <td>{{ movement.time }}</td>
+                    <td>{{ movement.currency_from }}</td>
+                    <td>{{ movement.quantity_from }}</td>
+                    <td>{{ movement.currency_to }}</td>
+                    <td>{{ movement.quantity_to }}</td>
+                    <td>{{ movement.unit_price }}</td>
+                </tr>
+            {% endif %}
+        {% endfor%}
+    </table>
+</a>
+{% endblock %}

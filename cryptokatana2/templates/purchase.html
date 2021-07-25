@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}myCrypto{% endblock %}
+
+{% block content %}
+<nav class="shadowed nav" >
+    <ul>
+        <li><span class="isActive"><a href="/movements">Transactions</a></span</li>
+        <li><span class="isDisabled"><a href="/purchase">Purchase</a></span</li>
+        <li><span class="isActive"><a href="/investment">Investment</a></span</li>
+    </ul>
+  </nav>
+    <h1 id="katanaheading">Katanate Your Currency</h1>
+    
+    <form action="/purchase" method="post">
+        <fieldset class="myfieldset">
+            {{ form.hidden_tag() }}
+            <tr>
+                {{ form.currency_from.label(class="wtflabels")}}
+                {{ form.currency_from(class="wtffields") }}
+                {% for error in form.currency_from.errors %}
+                    <p class="msg-err">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </tr>
+            <tr>
+                {{ form.currency_to.label(class="wtflabels")}}
+                {{ form.currency_to(class="wtffields") }}
+                {% for error in form.currency_to.errors %}
+                    <p class="msg-err">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </tr>
+            <tr>
+                {{ form.quantity_from.label(class="wtflabels")}}
+                {{ form.quantity_from(class="wtffields", placeholder="Input Quantity") }}
+                {% for error in form.quantity_from.errors %}
+                    <p class="msg-err">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </tr>
+            <tr>
+                {{ form.calculate}}
+            </tr>
+            <tr>
+                {{ form.quantity_to.label(class="wtflabels")}}
+                <span class="isDisabled">{{ '%0.4f'|format(quantity_to_price|float) }}</span>
+            </tr>
+            </tr>
+            <tr>
+                {{ form.unit_price.label(class="wtflabels")}}
+                <span class="isDisabled">{{ '%0.4f'|format(unit_price|float) }}</span>
+                {% for error in form.unit_price.errors %}
+                    <p class="msg-err">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </tr>
+            <tr id="">
+                {{ form.crypto_katana }}
+            </tr>
+        </fieldset>
+
+{% endblock %}

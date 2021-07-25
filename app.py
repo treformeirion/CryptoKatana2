@@ -1,0 +1,1 @@
+from cryptokatana2 import app

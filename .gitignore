@@ -1,0 +1,5 @@
+kvenv/
+**__pycache__/
+.env
+movements.db
+.vscode/

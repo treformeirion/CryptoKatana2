@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Investment Status{% endblock %}
+{% block content %}
+<link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/investment.css') }}">
+<nav class="shadowed nav">
+    <ul>
+        <li><span class="isActive"><a href="/movements">Transactions</a></span</li>
+        <li><span class="isActive"><a href="/purchase">Purchase</a></span</li>
+        <li><span class="isDisabled"><a href="/investment">Investment</a></span</li>
+    </ul>
+</nav>
+<h1 id="katanaheading">Investment Status</h1>
+
+<div class="login-page">
+    <div class="form">
+        <div class="login">
+            <div class="login-header">
+                <h3>Okoshiyasu!</h3>
+                <p>---------</p>
+            </div>
+        </div>
+        <div class="login-form">
+            <tr>
+                <p>Total Investment: </p>
+                €{{ ti }}
+            </tr>
+            <tr>
+                <p>Total Cryptocurrency Value: </p>
+                €{{ cv }}
+            </tr>
+            <tr>
+                <p>Total Profit: </p>
+                {{ pol_message }}
+                €{{ pol }}
+            </tr>
+        </div>
+    </div>
+</div>
+
+    
+{% endblock %}

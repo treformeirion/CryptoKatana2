@@ -1,0 +1,110 @@
+.loginform {
+    position: 50%;
+}
+
+.myfieldset {
+    margin: 15px;
+}
+
+.wtflabels {
+    color: #c082a6;
+    font-size: 0.8em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-color: #91417e;
+    margin: 0 auto;
+    text-align: center;
+    
+}
+
+.wtflabelsQ {
+    color: #c082a6;
+    font-size: 0.8em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-color: #91417e;
+    margin: 0 auto;
+    text-align: left;
+    
+}
+
+.wtffields {
+    font-size: 0.8em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    width: 10em;
+    padding: 10px 10px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    text-align: center;
+}
+
+a.button1 {
+    display: inline-block;
+    padding: 0.35em 1.2em;
+    border:0.1em solid #eba6c6;
+    margin:0 0em 0 0em;
+    border-radius:0.12em;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight:300;
+    color:#913e6e;
+    text-align:center;
+    transition: all 0.2s;
+}
+
+a.button1:hover{
+    color:#944d6f;
+    background-color:#ffe0f2;
+}
+@media all and (max-width:30em){
+a.button1{
+    display:block;
+    margin:0.4em auto;
+    }
+}
+
+a.katanate {
+    display: inline-block;
+    padding: 0.35em 1.2em;
+    border:0.3em solid #e5b1c9;
+    margin:0 1em 0 1em;
+    border-radius:0.12em;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight:300;
+    background-color:#fcd9ed;
+    text-align:center;
+    transition: all 0.2s;
+    max-width: 15em;
+    position: relative;
+    left: 90em;
+    bottom: 7.5em;
+    background-image: url("/static/images/katanalate.png")
+}
+
+a.katanate:hover{
+    color:#944d6f;
+    background-color:#7e0049;
+}
+@media all and (max-width:30em){
+a.katanate{
+    display:block;
+    margin:0.4em auto;
+    }
+}
+
+.submit-button {
+    color: #c082a6;
+    font-size: 0.8em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-color: #91417e;
+    margin: 0 auto;
+    text-align: center;
+}
+
