@@ -2,7 +2,7 @@ from datetime import date
 import time
 from cryptokatana2 import app
 from flask import render_template, request, flash, json
-from cryptokatana2.forms import MovementsForm, NameForm
+from cryptokatana2.forms import KatanaForm, MovementsForm, NameForm
 import sqlite3
 import urllib
 import random
@@ -164,6 +164,7 @@ def movements():
 def katana():
 
     form = MovementsForm()
+    katanate = KatanaForm()
     quantity_to_price = '0'
     unit_price = '0'
     user_query = querySQL("SELECT username FROM name_page WHERE id='1'")
@@ -208,8 +209,7 @@ def katana():
                          quantity_to_price = calculateKatana(u1, cf, ct, my_api)
                          unit_price = calculateUnitPrice(u1, cf, ct, my_api)
                          flash(success_calc_mssg)
-
-                    return render_template('purchase.html', form = form, quantity_to_price=quantity_to_price, unit_price=unit_price)
+                         return render_template('purchase.html', katanate=katanate, form = form, quantity_to_price=quantity_to_price, unit_price=unit_price)
 
                 except sqlite3.Error as the_error:
                     print("Unexpected error in the calculation: ", the_error)
@@ -220,68 +220,68 @@ def katana():
 
         if request.values.get("crypto_katana"):
             if form.validate():
-                cf = request.form.get("currency_from")
-                ct = request.form.get("currency_to")
-                u1 = request.form.get("quantity_from")
+                if katanate.validate():
+                    cf = request.form.get("currency_from")
+                    ct = request.form.get("currency_to")
+                    u1 = request.form.get("quantity_from")
 
-                currency_query_from = querySQL("SELECT value FROM currencyvalues WHERE currency='{}'".format(cf))
-                av_bal_fromSTR = currency_query_from[0]['value']
-                av_bal_from = float(av_bal_fromSTR)
+                    u2 = calculateUnitPrice(u1, cf, ct, my_api)
+                    tq = calculateKatana(u1, cf, ct, my_api)
 
-                u2 = calculateUnitPrice(u1, cf, ct, my_api)
-                tq = calculateKatana(u1, cf, ct, my_api)
+                    currency_query_from = querySQL("SELECT value FROM currencyvalues WHERE currency='{}'".format(cf))
+                    av_bal_fromSTR = currency_query_from[0]['value']
+                    av_bal_from = float(av_bal_fromSTR)
+                    print(av_bal_from)
 
-                error_message_5 = "YOU DO NOT POSSESS THE NECESSARY FUNDS IN {} TO COMPLETE THIS TRANSACTION, {}".format(cf, username)
-                error_message_6 = "SURELY, THE WISE {} WOULD NOT PURCHASE AN ITEM WITHOUT KNOWING ITS VALUE".format(username)
+                    error_message_5 = "YOU DO NOT POSSESS THE NECESSARY FUNDS IN {} TO COMPLETE THIS TRANSACTION, {}".format(cf, username)
 
-                try:
+                    try:
 
-                    if av_bal_from < float(u1):
-                        flash(error_message_5)
-                    elif u2 == 0:
-                        flash(error_message_6)
-                    else:
+                        if av_bal_from < float(u1):
+                            flash(error_message_5)
 
-                        currency_query_to = querySQL("SELECT VALUE FROM CURRENCYVALUES WHERE currency='{}'".format(ct))
-                        av_bal_toSTR = currency_query_to[0]['value']
-                        av_bal_to = float(av_bal_toSTR)
+                        else:
 
-                        # currency_from_balance
-                        cfb = av_bal_from - float(u1)
-                        # currency_to_balance
-                        ctb = av_bal_to + float(tq)
-                        # Insert addition and subtraction (and trapped euro value)
-                        cfbSTR = str(cfb)
-                        ctbSTR = str(ctb)
-                        u1STR = str(u1)
-                        
-                        final_currency_insert_query = modifySQL2("""UPDATE currencyvalues SET value=({}) WHERE currency='{}';
-                                                                UPDATE currencyvalues SET value=({}) WHERE currency='{}';
-                                                                UPDATE currencyvalues SET euro_value=({}) WHERE currency = '{}'; """.format(cfbSTR, cf, ctbSTR, ct, u1STR, ct))
+                            currency_query_to = querySQL("SELECT VALUE FROM CURRENCYVALUES WHERE currency='{}'".format(ct))
+                            av_bal_toSTR = currency_query_to[0]['value']
+                            av_bal_to = float(av_bal_toSTR)
 
-                        today_date = date.today()
-                        tdate = today_date.strftime("%d/%m/%Y")
+                            # currency_from_balance
+                            cfb = av_bal_from - float(u1)
+                            # currency_to_balance
+                            ctb = av_bal_to + float(tq)
+                            # Insert addition and subtraction (and trapped euro value)
+                            cfbSTR = str(cfb)
+                            ctbSTR = str(ctb)
+                            u1STR = str(u1)
+                            
+                            final_currency_insert_query = modifySQL2("""UPDATE currencyvalues SET value=({}) WHERE currency='{}';
+                                                                    UPDATE currencyvalues SET value=({}) WHERE currency='{}';
+                                                                    UPDATE currencyvalues SET euro_value=({}) WHERE currency = '{}'; """.format(cfbSTR, cf, ctbSTR, ct, u1STR, ct))
 
-                        localtime = time.localtime()
-                        ttime = time.strftime("%H:%M:%S", localtime)
+                            today_date = date.today()
+                            tdate = today_date.strftime("%d/%m/%Y")
 
-                        transactionQuery = """INSERT INTO movements (date, time, currency_from, currency_to, quantity_from, quantity_to, unit_price) 
-                                VALUES (?, ?, ?, ?, ?, ?, ?)"""
+                            localtime = time.localtime()
+                            ttime = time.strftime("%H:%M:%S", localtime)
 
-                        transaction_time_message = 'Purchase recorded on {} at {}'.format(tdate, ttime)
-                        flash(transaction_time_message)
+                            transactionQuery = """INSERT INTO movements (date, time, currency_from, currency_to, quantity_from, quantity_to, unit_price) 
+                                    VALUES (?, ?, ?, ?, ?, ?, ?)"""
 
-                        transaction = modifySQL(transactionQuery, [tdate, ttime, form.currency_from.data, form.currency_to.data, form.quantity_from.data,
-                                            tq, u2])
+                            transaction_time_message = 'Purchase recorded on {} at {}'.format(tdate, ttime)
+                            flash(transaction_time_message)
 
-                        return render_template('purchase.html', form=form, quantity_to_price=quantity_to_price, unit_price=unit_price, transaction=transaction, fciq = final_currency_insert_query)
+                            transaction = modifySQL(transactionQuery, [tdate, ttime, form.currency_from.data, form.currency_to.data, form.quantity_from.data,
+                                                tq, u2])
 
-                except sqlite3.Error as the_error:
-                    print("Error in SQL INSERT: ", the_error)
-                    flash("There has been an issue with the database. The samurai are comitting sepukku in shame", "error")
-                    return render_template('purchase.html', form = form, quantity_to_price=quantity_to_price, unit_price=unit_price)
-                
-            return render_template('purchase.html', form = form, quantity_to_price=quantity_to_price, unit_price=unit_price)
+                            return render_template('purchase.html', form=form, quantity_to_price=quantity_to_price, unit_price=unit_price, transaction=transaction, fciq = final_currency_insert_query)
+
+                    except sqlite3.Error as the_error:
+                        print("Error in SQL INSERT: ", the_error)
+                        flash("There has been an issue with the database. The samurai are comitting sepukku in shame", "error")
+                        return render_template('purchase.html', form = form, quantity_to_price=quantity_to_price, unit_price=unit_price)
+                    
+                return render_template('purchase.html', form = form, quantity_to_price=quantity_to_price, unit_price=unit_price)
 
 #   #   #   #   #   #   #   # KATANA ROUTES: INVESTMENT #   #   #   #   #   #   #   #   #   #   #
 

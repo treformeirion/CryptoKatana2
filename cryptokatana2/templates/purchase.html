@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}myCrypto{% endblock %}
+{% block title %}Purchase{% endblock %}
 
 {% block content %}
 <nav class="shadowed nav" >
@@ -39,10 +39,14 @@
                 {{ form.unit_price.label(class="wtflabels")}}
                 <span class="isDisabled">{{ '%0.7f'|format(unit_price|float) }}</span>
             </tr>
-            <tr id="">
-                {{ form.crypto_katana }}
-            </tr>
+            <span>
+                {% if katanate %}
+                    {{ katanate.crypto_katana }}
+                {% endif %}
+            </span>
         </fieldset>
+
+
 
         {% for error in form.quantity_from.errors %}
                     <p class="popup_from">

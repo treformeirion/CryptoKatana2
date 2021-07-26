@@ -27,5 +27,8 @@ class MovementsForm(FlaskForm):
     
 
     calculate = SubmitField('Calculate')
+
+class KatanaForm(FlaskForm):
+
     crypto_katana = SubmitField('Katana')
     
