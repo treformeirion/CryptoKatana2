@@ -195,6 +195,7 @@ def katana():
                 error_message_2 = "YOU MAY ONLY BUY {} WITH OTHER CRYPTOCURRENCIES, {}".format(ct, username)
                 error_message_3 = "YOU MAY ONLY SELL BITCOIN TO BUY EUROS, {}".format(username)
                 error_message_4 = "YOU MUST INPUT AN AMOUNT IF YOU WISH TO PURCHASE A CURRENCY, {}".format(username)
+                error_message_neg = "NEGATIVITY ALLOWS WOEFUL SPIRITS TO ENTER THE MIND, {}".format(username)
                 try:
                     
                     if cf == ct:
@@ -205,6 +206,8 @@ def katana():
                         flash(error_message_3)
                     elif float(u1) == 0:
                         flash(error_message_4)
+                    elif float(u1) < 0:
+                        flash(error_message_neg)
                     else:
                          quantity_to_price = calculateKatana(u1, cf, ct, my_api)
                          unit_price = calculateUnitPrice(u1, cf, ct, my_api)
