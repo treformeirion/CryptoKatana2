@@ -27,12 +27,12 @@
             </tr>
             <tr>
                 <p>Total Cryptocurrency Value: </p>
-                €{{ cv }}
+                €{{ '%0.2f'|format(cv|float) }}
             </tr>
             <tr>
                 <p>Total Profit: </p>
                 {{ pol_message }}
-                €{{ pol }}
+                €{{ '%0.2f'|format(pol|float) }}
             </tr>
         </div>
     </div>

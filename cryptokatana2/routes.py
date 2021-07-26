@@ -24,7 +24,7 @@ def calculateKatana(u1, cf, ct, my_api):
 
     return quantity_to
 
-# Returns the unit price.
+# Returns the unit price of Euro or Cryptourrency.
 
 def calculateUnitPrice(u1, cf, ct, my_api):
 
@@ -35,7 +35,7 @@ def calculateUnitPrice(u1, cf, ct, my_api):
     cmcDict = json.loads(data)
 
     quantity_to = cmcDict['data']['quote'][ct]['price']
-    unit_price = (quantity_to/int(u1))
+    unit_price = (quantity_to/float(u1))
 
     return unit_price
     
@@ -190,7 +190,7 @@ def katana():
                         flash(error_message_2)
                     elif cf != "BTC" and ct == "EUR":
                         flash(error_message_3)
-                    elif int(u1) == 0:
+                    elif float(u1) == 0:
                         flash(error_message_4)
                     elif u1 == '':
                         flash(error_message_4_5)
@@ -215,8 +215,9 @@ def katana():
                 u1 = request.form.get("quantity_from")
 
                 currency_query_from = querySQL("SELECT value FROM currencyvalues WHERE currency='{}'".format(cf))
-                available_balance_from = currency_query_from[0]['value']
-                print(available_balance_from)
+                av_bal_fromSTR = currency_query_from[0]['value']
+                av_bal_from = float(av_bal_fromSTR)
+                
                 u2 = calculateUnitPrice(u1, cf, ct, my_api)
                 tq = calculateKatana(u1, cf, ct, my_api)
 
@@ -224,22 +225,27 @@ def katana():
 
                 try:
 
-                    if available_balance_from < int(u1):
+                    if av_bal_from < int(u1):
                         flash(error_message_5)
 
                     else:
 
                         currency_query_to = querySQL("SELECT VALUE FROM CURRENCYVALUES WHERE currency='{}'".format(ct))
-                        available_balance_to = currency_query_to[0]['value']
+                        av_bal_toSTR = currency_query_to[0]['value']
+                        av_bal_to = float(av_bal_toSTR)
 
                         # currency_from_balance
-                        cfb = available_balance_from - int(u1)
+                        cfb = av_bal_from - float(u1)
                         # currency_to_balance
-                        ctb = available_balance_to + int(tq)
+                        ctb = av_bal_to + float(tq)
                         # Insert addition and subtraction (and trapped euro value)
+                        cfbSTR = str(cfb)
+                        ctbSTR = str(ctb)
+                        u1STR = str(u1)
+                        
                         final_currency_insert_query = modifySQL2("""UPDATE currencyvalues SET value=({}) WHERE currency='{}';
                                                                 UPDATE currencyvalues SET value=({}) WHERE currency='{}';
-                                                                UPDATE currencyvalues SET euro_value=({}) WHERE currency = '{}'; """.format(cfb, cf, ctb, ct, u1, ct))
+                                                                UPDATE currencyvalues SET euro_value=({}) WHERE currency = '{}'; """.format(cfbSTR, cf, ctbSTR, ct, u1STR, ct))
 
                         today_date = date.today()
                         tdate = today_date.strftime("%d/%m/%Y")
@@ -282,9 +288,8 @@ def investment():
     if euro_invest_query[0] == {'SUM(quantity_from)': None}:
         pass
     else:
-        total_invest = euro_invest_query[0]['SUM(quantity_from)']
-        total_investSTR = total_invest
-        print(total_invest)
+        total_investSTR = euro_invest_query[0]['SUM(quantity_from)']
+        total_invest = float(total_investSTR)
 
     # Trapped Value of Cryptocurrencies in Euros (upon purchase). Unused.
     trapped_crypto_currency_query = querySQL("SELECT SUM(euro_value) FROM currencyvalues WHERE NOT currency='EUR'", parameters)
@@ -323,37 +328,19 @@ def investment():
     if len(crypto_dict_2) >= t:
         for crypto in crypto_dict_2:
             cvalue = crypto_dict_2[crypto]
-            print(cvalue)
-            if evalue != 0:
-                euro_value_in_crypto = calculateKatana(cvalue, crypto, evalue, my_api)
+            fcvalue = float(cvalue)
+            if fcvalue != 0:
+                euro_value_in_crypto = calculateKatana(fcvalue, crypto, evalue, my_api)
                 invest_list.append(euro_value_in_crypto)
-                pass
             else:
                 pass
-                
+        t += 1
 
-# I have 2 BTC, which I bought for with 300 Euros
-# Now, 2 BTC is worth 350 Euros.
-# To get the result, I need to subtract 300 from 300
-# My gross profit is the result of that subtraction.
-
-                #euro_worth_unit = calculateCryptoValue(valueint, crypto, ct, my_api)
-                #invest_list.append(euro_worth_unit)
-            #else:
-                #pass
-
-    # The value of the cryptocurrency in euros is dependant on:
-    # Its current value now - which I can extract with the api.
-    # How much I have now. So if I have 2 Btc. I check how much 2 Btc is, and then convert it to
-    # EUROS. BUT HOW?
-    # I check how much the unit price is for one euro.
-    # I check how much I have.
-    # I subtract 
-
-    #calculate_the_value = calculateCryptoValue(valueint, crypto, ct, my_api)
-                #invest_list.append(calculate_the_value)
+    # Adds up all of the cryptocurrencies in their current value
 
     cryptokatana_final_investment_value = sum(invest_list)
+
+    # La regla de tres
 
     profit_or_loss = cryptokatana_final_investment_value - total_invest
     profit_lossSTR = profit_or_loss
