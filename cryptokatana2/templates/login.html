@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-<link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/sensei.css')}}">
 
 {% block title %}Bow To Your Sensei{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/sensei.css')}}">
 <div class="login-page">
     <div class="form">
         <div class="login">
@@ -12,9 +12,14 @@
                 <p>Your name, nakakosho</p>
             </div>
         </div>
-        <form action="/login" method="post" class="login-form">
-            <input type="text" name="username">
-            <input type="submit" value="submit">
+        <form action="/movements" method="post" class="login-form">
+            {{ form.username(class="login-form") }}
+            {% for error in form.username.errors %}
+                <p class="msg-err">
+                    {{ error }}
+                </p>
+            {% endfor %}
+            {{ form.submit_name }}
         </form>
     </div>
 </div>

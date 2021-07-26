@@ -2,31 +2,14 @@ from datetime import date
 import time
 from cryptokatana2 import app
 from flask import render_template, request, redirect, url_for, flash, json, session
-from cryptokatana2.forms import MovementsForm
+from cryptokatana2.forms import MovementsForm, NameForm
 import sqlite3
 import urllib
-
-# Namepage code. Please enter your name and password here so that it works.
-
-'''THE BIG ISSUE: DOES MY BITCOINS TRANSFER INTO SINGLE UNITS OR DO I JUST HAVE ALMOST NOTHING IN BITCOINS?'''
-'''THIS MIGHT BE A HUGE PROBLEM. WHEN I BUY MY BITCOINS, ALTHOUGH THEIR VALUE IN EUROS IS THAT MUCH, I SHOULD HAVE
-SO AND SO MANY BITCOINS. FOR EXAMPLE. IF I BUY '''
-''' ALSO THE UNIT PRICE CHANGES. WHY?'''
-
-name = "Trefor"
-
-user = {"username": name}
 
 # Access the api by providing an api key.
 
 my_api = '65bcaa07-93bc-428d-a65e-6d2dbe67eb79'
 
-# The Great Catalogue of Messages:
-
-profit_message = "You have made a profit of: "
-loss_message = "You have made a loss of: "
-no_movement_message = "NO MOVEMENTS"
-    
 # Returns an accurate calculation of the quantity you'll be getting for the unit price of the currency the client will be converting to
 
 def calculateKatana(u1, cf, ct, my_api):
@@ -37,14 +20,9 @@ def calculateKatana(u1, cf, ct, my_api):
     data = operurl.read()
     cmcDict = json.loads(data)
 
-    quantity = cmcDict['data']['amount']
-    unit_price = cmcDict['data']['quote'][ct]['price']
+    quantity_to = cmcDict['data']['quote'][ct]['price']
 
-    quantityTo = (quantity*unit_price)
-
-    #quantityTo = cmcDict['quote'][ct]['price']*cmcDict[u1]
-
-    return quantityTo
+    return quantity_to
 
 # Returns the unit price.
 
@@ -56,15 +34,16 @@ def calculateUnitPrice(u1, cf, ct, my_api):
     data = operurl.read()
     cmcDict = json.loads(data)
 
-    unit_price = cmcDict['data']['quote'][ct]['price']
+    quantity_to = cmcDict['data']['quote'][ct]['price']
+    unit_price = (quantity_to/int(u1))
 
     return unit_price
-
-# Returns the entire cryptocurrency table value
     
 # Profit or loss Message Function
 
 def profitorlossMssg(crypto_value, total_invest):
+    profit_message = "You have made a profit of: "
+    loss_message = "You have made a loss of: "
     if (crypto_value > total_invest):
         return profit_message
     else:
@@ -107,26 +86,50 @@ def modifySQL2(query):
 
 #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
 
-'''Name page:
-                1. Invites the client to insert their name
-                2. Inserts the name into the database and accesses the transaction page'''
+'''username page:
+                1. Invites the client to insert their username
+                2. Inserts the username into the database and accesses the transaction page'''
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'POST':
-        username = request.form.get('username')
 
-        return render_template('movements.html', username=username)
+    form = NameForm()
 
-    return render_template('login.html')
+    name_query = "INSERT INTO name_page (username) VALUES (?)"
 
+    if request.method == 'GET':
+
+        return render_template('login.html', form=form)
+    
+    else:
+
+        if request.values.get('submit_name'):
+            if form.validate():
+                name = request.values.get("username")
+                print(name)
+
+                try:
+                    name_insert = modifySQL(name_query, [name])
+
+                    return render_template('movements.html', form=form, name_insert=name_insert)
+
+                except sqlite3.Error as the_error:
+                    print("Error in SQL INSERT: ", the_error)
+                    flash("There has been an issue with the database. The samurai are comitting sepukku in shame", "error")
+
+                    return render_template('login.html', form=form)
+
+            return render_template('login.html', form=form)
+        
 #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
 
 '''Movements/Transactions page:
                                 1. All of the transactions comitted to the Movements table in the database'''
 
-@app.route('/movements', methods=['GET'])
+@app.route('/movements', methods=['GET', 'POST'])
 def movements():
+
+    no_movement_message = "NO MOVEMENTS"
 
     query = "SELECT * FROM MOVEMENTS WHERE 1 = 1"
     parameters = []
@@ -135,7 +138,7 @@ def movements():
     if movements == []:
         flash(no_movement_message)
 
-    return render_template('movements.html', data = movements, name=name)
+    return render_template('movements.html', data = movements)
 
 #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
 
@@ -155,6 +158,9 @@ def katana():
     form = MovementsForm()
     quantity_to_price = '0'
     unit_price = '0'
+    user_query = querySQL("SELECT username FROM name_page WHERE id='1'")
+    username = user_query[0]['username'].upper()
+
 
     if request.method == 'GET':
 
@@ -163,7 +169,7 @@ def katana():
     else:
         if request.values.get("calculate"):
             if form.validate():
-                parameters = []
+                #parameters = []
                 cf = request.form.get("currency_from")
                 ct = request.form.get("currency_to")
                 u1 = request.form.get("quantity_from")
@@ -171,11 +177,11 @@ def katana():
                 # Shameful error messages
 
                 no_error_message = ""
-                error_message_1 = "YOU CANNOT BUY ANY CURRENCY WITH THE SAME CURRENCY, {}-SAN".format(name)
-                error_message_2 = "YOU MAY ONLY BUY {} WITH OTHER CRYPTOCURRENCIES, {}-SAN".format(ct, name)
-                error_message_3 = "YOU MAY ONLY SELL BITCOIN TO BUY EUROS, {}-SAN".format(name)
-                error_message_4 = "YOU MUST INPUT AN AMOUNT IF YOU WISH TO PURCHASE A CURRENCY, {}-SAN".format(name)
-
+                error_message_1 = "YOU CANNOT BUY ANY CURRENCY WITH THE SAME CURRENCY, {}-SAN".format(username)
+                error_message_2 = "YOU MAY ONLY BUY {} WITH OTHER CRYPTOCURRENCIES, {}-SAN".format(ct, username)
+                error_message_3 = "YOU MAY ONLY SELL BITCOIN TO BUY EUROS, {}-SAN".format(username)
+                error_message_4 = "YOU MUST INPUT AN AMOUNT IF YOU WISH TO PURCHASE A CURRENCY, {}-SAN".format(username)
+                error_message_4_5 = "YOU MUST NOT WRITE STRINGS IN THE SACRED QUANTITY FROM FIELD, {}-SAN".format(username)
                 try:
                     
                     if cf == ct:
@@ -184,8 +190,10 @@ def katana():
                         flash(error_message_2)
                     elif cf != "BTC" and ct == "EUR":
                         flash(error_message_3)
-                    elif u1 == 0:
+                    elif int(u1) == 0:
                         flash(error_message_4)
+                    elif u1 == '':
+                        flash(error_message_4_5)
                     else:
                          quantity_to_price = calculateKatana(u1, cf, ct, my_api)
                          unit_price = calculateUnitPrice(u1, cf, ct, my_api)
@@ -202,21 +210,17 @@ def katana():
 
         if request.values.get("crypto_katana"):
             if form.validate():
-                parameters = []
                 cf = request.form.get("currency_from")
                 ct = request.form.get("currency_to")
                 u1 = request.form.get("quantity_from")
 
-                # To subtract the amount from any currency's value, I need to take the available balance info, and
-                # add or subtract the amount and then insert the available balance into the values column.
-
-                currency_query_from = querySQL("SELECT VALUE FROM CURRENCYVALUES WHERE currency='{}'".format(cf))
+                currency_query_from = querySQL("SELECT value FROM currencyvalues WHERE currency='{}'".format(cf))
                 available_balance_from = currency_query_from[0]['value']
                 print(available_balance_from)
                 u2 = calculateUnitPrice(u1, cf, ct, my_api)
                 tq = calculateKatana(u1, cf, ct, my_api)
 
-                error_message_5 = "YOU DO NOT POSSESS THE NECESSARY FUNDS IN {} TO COMPLETE THIS TRANSACTION, {}-SAN".format(cf, name)
+                error_message_5 = "YOU DO NOT POSSESS THE NECESSARY FUNDS IN {} TO COMPLETE THIS TRANSACTION, {}-SAN".format(cf, username)
 
                 try:
 
@@ -232,7 +236,7 @@ def katana():
                         cfb = available_balance_from - int(u1)
                         # currency_to_balance
                         ctb = available_balance_to + int(tq)
-
+                        # Insert addition and subtraction (and trapped euro value)
                         final_currency_insert_query = modifySQL2("""UPDATE currencyvalues SET value=({}) WHERE currency='{}';
                                                                 UPDATE currencyvalues SET value=({}) WHERE currency='{}';
                                                                 UPDATE currencyvalues SET euro_value=({}) WHERE currency = '{}'; """.format(cfb, cf, ctb, ct, u1, ct))
@@ -243,7 +247,7 @@ def katana():
                         localtime = time.localtime()
                         ttime = time.strftime("%H:%M:%S", localtime)
 
-                        transactionQuery = """INSERT INTO MOVEMENTS (date, time, currency_from, currency_to, quantity_from, quantity_to, unit_price) 
+                        transactionQuery = """INSERT INTO movements (date, time, currency_from, currency_to, quantity_from, quantity_to, unit_price) 
                                 VALUES (?, ?, ?, ?, ?, ?, ?)"""
 
                         transaction_time_message = 'Purchase recorded on {} at {}'.format(tdate, ttime)
@@ -275,8 +279,12 @@ def investment():
 
     # Total invested Euros
     euro_invest_query = querySQL("SELECT SUM(quantity_from) FROM movements WHERE currency_from='EUR'", parameters)
-    total_invest = euro_invest_query[0]['SUM(quantity_from)']
-    total_investSTR = total_invest
+    if euro_invest_query[0] == {'SUM(quantity_from)': None}:
+        pass
+    else:
+        total_invest = euro_invest_query[0]['SUM(quantity_from)']
+        total_investSTR = total_invest
+        print(total_invest)
 
     # Trapped Value of Cryptocurrencies in Euros (upon purchase). Unused.
     trapped_crypto_currency_query = querySQL("SELECT SUM(euro_value) FROM currencyvalues WHERE NOT currency='EUR'", parameters)
@@ -303,24 +311,55 @@ def investment():
             pass
         i += 1
 
-    ct = "EUR"
+    # Here, the crypto dictionary pops the EUR so that it doesn't iterate over an empty list:
+
+    crypto_dict_2.pop("EUR")
+
+    # Returns the trapped value of each crypto in the database, and calculates its current value against the euro.
+
+    t = 0
+    evalue = "EUR"
     invest_list = []
-    for crypto in crypto_dict_2:
-        value = crypto_dict_2[crypto]
-        print(crypto)
-        print(value)
-        calculate_the_value = calculateUnitPrice(value, crypto, ct, my_api)
-        invest_list.append(calculate_the_value)
-    cryptokatana_final_investment_value = sum(list)
+    if len(crypto_dict_2) >= t:
+        for crypto in crypto_dict_2:
+            cvalue = crypto_dict_2[crypto]
+            print(cvalue)
+            if evalue != 0:
+                euro_value_in_crypto = calculateKatana(cvalue, crypto, evalue, my_api)
+                invest_list.append(euro_value_in_crypto)
+                pass
+            else:
+                pass
+                
 
+# I have 2 BTC, which I bought for with 300 Euros
+# Now, 2 BTC is worth 350 Euros.
+# To get the result, I need to subtract 300 from 300
+# My gross profit is the result of that subtraction.
 
-    #cryptokatana_final_investment_value = total_cryptos_value / total_invest
+                #euro_worth_unit = calculateCryptoValue(valueint, crypto, ct, my_api)
+                #invest_list.append(euro_worth_unit)
+            #else:
+                #pass
 
-    # Have you made a profit or a loss?
-    profit_or_loss = ''
+    # The value of the cryptocurrency in euros is dependant on:
+    # Its current value now - which I can extract with the api.
+    # How much I have now. So if I have 2 Btc. I check how much 2 Btc is, and then convert it to
+    # EUROS. BUT HOW?
+    # I check how much the unit price is for one euro.
+    # I check how much I have.
+    # I subtract 
+
+    #calculate_the_value = calculateCryptoValue(valueint, crypto, ct, my_api)
+                #invest_list.append(calculate_the_value)
+
+    cryptokatana_final_investment_value = sum(invest_list)
+
+    profit_or_loss = cryptokatana_final_investment_value - total_invest
     profit_lossSTR = profit_or_loss
 
     # Profit or loss message:
+    
     pol_message = profitorlossMssg(cryptokatana_final_investment_value, total_invest)
 
     return render_template('investment.html', cv=cryptokatana_final_investment_value, ti=total_investSTR, pol=profit_lossSTR, pol_message=pol_message)

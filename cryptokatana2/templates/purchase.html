@@ -47,12 +47,12 @@
             </tr>
             <tr>
                 {{ form.quantity_to.label(class="wtflabels")}}
-                <span class="isDisabled">{{ '%0.4f'|format(quantity_to_price|float) }}</span>
+                <span class="isDisabled">{{ '%0.7f'|format(quantity_to_price|float) }}</span>
             </tr>
             </tr>
             <tr>
                 {{ form.unit_price.label(class="wtflabels")}}
-                <span class="isDisabled">{{ '%0.4f'|format(unit_price|float) }}</span>
+                <span class="isDisabled">{{ '%0.7f'|format(unit_price|float) }}</span>
                 {% for error in form.unit_price.errors %}
                     <p class="msg-err">
                         {{ error }}
