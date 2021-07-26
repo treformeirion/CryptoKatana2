@@ -250,14 +250,14 @@ def katana():
                             cfb = av_bal_from - float(u1)
                             # currency_to_balance
                             ctb = av_bal_to + float(tq)
-                            # Insert addition and subtraction (and trapped euro value)
+                            # Insert addition and subtraction
                             cfbSTR = str(cfb)
                             ctbSTR = str(ctb)
                             u1STR = str(u1)
                             
                             final_currency_insert_query = modifySQL2("""UPDATE currencyvalues SET value=({}) WHERE currency='{}';
                                                                     UPDATE currencyvalues SET value=({}) WHERE currency='{}';
-                                                                    UPDATE currencyvalues SET euro_value=({}) WHERE currency = '{}'; """.format(cfbSTR, cf, ctbSTR, ct, u1STR, ct))
+                                                                    """.format(cfbSTR, cf, ctbSTR, ct, u1STR, ct))
 
                             today_date = date.today()
                             tdate = today_date.strftime("%d/%m/%Y")
