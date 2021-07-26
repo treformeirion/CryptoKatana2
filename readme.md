@@ -30,9 +30,11 @@ flask run
 
 -IT IS HIGHLY RECOMMENDED THAT THIS WEB APP IS VIEWED ON AN 18-INCH+ MONITOR. The CSS was modified and designed using a large external monitor, and so unfortunately the error messages appear halfway off the bottom of the screen. For best quality, use a large external monitor. I promise I will take CSS lessons in the future.
 
--Review the currencyvalues table in the movements.db file. If you wish to subtract or add to the total amount of Euros, which is defaulted to 10000, feel free.
+-Review the currencyvalues table in the movements.db file. If you wish to subtract or add to the total amount of Euros, which is defaulted to 10000, feel free. The euro_value table is an vestigial appendage left over from an earlier prototype of trapped values. It no longer serves a purpose, but it could prove useful as a secondary manner in which to calculate euros, if an elegant solution should arise.
 
--The username page is only used to personalize the error messages. Unfortunately, the code does not store names in the database and I do not know why. As it is not part of the project, I don't expect for it to count against me. If you can figure out why it doesn't store data, please let me know. In the meantime, if you want personalized errors, you will have to go into the database and change the name value manually.
+-The username page is only used to personalize the error messages. Unfortunately, the code does not store names in the database and I do not know why. As it is not part of the project, I decided to stop wasting time on it. If you can figure out why it doesn't store data, please let me know. In the meantime, if you want personalized errors, you will have to go into the username table in movements.db and change the name value manually.
+
+-Due to not wanting to rock the boat so late in the trip, I left the movements.db database as is. However, if I were to start again, I'd call it the "data.db" database.
 
 # Developer
 

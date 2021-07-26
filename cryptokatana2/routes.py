@@ -293,10 +293,26 @@ def katana():
 @app.route('/investment', methods = ['GET'])
 def investment():
 
-    # Trapped Value of Cryptocurrencies in Euros (upon purchase).
-    trapped_crypto_currency_query = querySQL("SELECT SUM(euro_value) FROM currencyvalues WHERE NOT currency='EUR'")
-    trapped_crypto_value = trapped_crypto_currency_query[0]['SUM(euro_value)']
-    trapped_crypto_valueSTR = trapped_crypto_value
+    # Total invested Euros (This code is ugly like a foot, but it works.)
+
+    euro_invest_query = querySQL("SELECT SUM(quantity_from) FROM movements WHERE currency_from='EUR'")
+    euro_return_query = querySQL("SELECT SUM(quantity_to) FROM movements WHERE currency_to='EUR'")
+
+    if euro_invest_query[0] == {'SUM(quantity_from)': None}:
+        total_euro_invest = 0
+        total_euro_investSTR = '0'
+    else:
+        total_euro_investSTR = euro_invest_query[0]['SUM(quantity_from)']
+        total_euro_invest = float(total_euro_investSTR)
+
+    if euro_return_query[0] == {'SUM(quantity_to)': None}:
+        total_euro_return = 0
+        total_euro_returnSTR = '0'
+    else:
+        total_euro_returnSTR = euro_return_query[0]['SUM(quantity_to)']
+        total_euro_return = float(total_euro_returnSTR)
+
+    final_euro_invest = (total_euro_invest-total_euro_return)
 
     # Current value of Cryptocurrencies
    
@@ -344,14 +360,14 @@ def investment():
 
     # La regla de tres
 
-    profit_or_loss = cryptokatana_final_investment_value - trapped_crypto_value
+    profit_or_loss = cryptokatana_final_investment_value - final_euro_invest
     profit_lossSTR = profit_or_loss
 
     # Profit or loss message:
     
-    pol_message = profitorlossMssg(cryptokatana_final_investment_value, trapped_crypto_value)
+    pol_message = profitorlossMssg(cryptokatana_final_investment_value, final_euro_invest)
 
-    return render_template('investment.html', cv=cryptokatana_final_investment_value, ti=trapped_crypto_valueSTR, pol=profit_lossSTR, pol_message=pol_message)
+    return render_template('investment.html', cv=cryptokatana_final_investment_value, fei=final_euro_invest, pol=profit_lossSTR, pol_message=pol_message)
     
 
                 
