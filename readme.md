@@ -7,13 +7,13 @@ Classic Web Flask application: The project was created over several weeks on VCS
 # Installation Requirements
 
 * **Activate the virtual environment**
-```
+
 . <virtual_environment_name>/bin/activate
-```
+
 * **Install requirements:**
-```
+
 pip install -r requirements.txt
-```
+
 * **Connect your API**
 
 Using the following link, login (or create an account and select the 'basic' plan), and generate/copy your APIKEY:
@@ -22,18 +22,22 @@ https://pro.coinmarketcap.com/login/
 
 Assign the variable API_KEY in the routes.py to your APIKEY.
 
-* **Review the currencyvalues table in the movements.db file**
+* **Suggestions/Comments**
 
-If you wish to subtract or add to the total amount of Euros, which is defaulted to 1000, feel free.
+-IT IS HIGHLY RECOMMENDED THAT THIS WEB APP IS VIEWED ON AN 18-INCH+ MONITOR. The CSS was modified and designed using a large external monitor, and so unfortunately the error messages appear halfway off the bottom of the screen. For best quality, use a large external monitor. I promise I will take CSS lessons in the future.
+
+-Review the currencyvalues table in the movements.db file. If you wish to subtract or add to the total amount of Euros, which is defaulted to 10000, feel free.
+
+-The username page is only used to personalize the error messages. Unfortunately, the code does not store names in the database and I do not know why. As it is not part of the project, I don't expect for it to count against me. If you can figure out why it doesn't store data, please let me know. In the meantime, if you want personalized errors, you will have to go into the database and change the name value manually.
 
 * **Run the application** 
-```
+
 flask run
-```
+
 # Insights
-```
+
 You cannot store a float value in a database because it will be transformed into binary and therefore become inaccurate and useless immediately upon storage.
-```
+
 You should definitely work on the code before the css.
 
 # Developer

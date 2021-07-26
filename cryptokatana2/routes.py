@@ -1,14 +1,18 @@
 from datetime import date
 import time
 from cryptokatana2 import app
-from flask import render_template, request, redirect, url_for, flash, json, session
+from flask import render_template, request, flash, json
 from cryptokatana2.forms import MovementsForm, NameForm
 import sqlite3
 import urllib
+import random
 
 # Access the api by providing an api key.
 
 my_api = '65bcaa07-93bc-428d-a65e-6d2dbe67eb79'
+
+#   #   #   #   #   #   #   # KATANA FUNCTIONS #   #   #   #   #   #   #   #   #   #   #
+
 
 # Returns an accurate calculation of the quantity you'll be getting for the unit price of the currency the client will be converting to
 
@@ -68,6 +72,8 @@ def querySQL(query, parameters=[]):
     connection.close()
     return result
 
+# Change the SQL table (Borrowed from our kakebo lessons)
+
 def modifySQL(query, parameters=[]):
 
     connection = sqlite3.connect("movements.db")
@@ -75,6 +81,8 @@ def modifySQL(query, parameters=[]):
     cur.execute(query, parameters)
     connection.commit()
     connection.close()
+
+# ModifySQL function on steroids. It can execute numerous queries.
 
 def modifySQL2(query):
 
@@ -84,7 +92,7 @@ def modifySQL2(query):
     connection.commit()
     connection.close()
 
-#   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
+#   #   #   #   #   #   #   # KATANA ROUTES: USERNAME #   #   #   #   #   #   #   #   #   #   #
 
 '''username page:
                 1. Invites the client to insert their username
@@ -121,7 +129,7 @@ def index():
 
             return render_template('login.html', form=form)
         
-#   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
+#   #   #   #   #   #   #   # KATANA ROUTES: MOVEMENT/TRANSACTIONS #   #   #   #   #   #   #   #   #   #   #
 
 '''Movements/Transactions page:
                                 1. All of the transactions comitted to the Movements table in the database'''
@@ -140,9 +148,9 @@ def movements():
 
     return render_template('movements.html', data = movements)
 
-#   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
+#   #   #   #   #   #   #   # KATANA ROUTES: PURCHASE/SPEND #   #   #   #   #   #   #   #   #   #   #
 
-''' Purchase Page:
+''' Purchase/Spend Page:
                     1. Select which currency to spend
                     2. Select which currency to purchase
                     3. Input quantity of currency to spend
@@ -169,19 +177,23 @@ def katana():
     else:
         if request.values.get("calculate"):
             if form.validate():
-                #parameters = []
                 cf = request.form.get("currency_from")
                 ct = request.form.get("currency_to")
                 u1 = request.form.get("quantity_from")
                 
-                # Shameful error messages
+                # The Great Advisor
 
-                no_error_message = ""
-                error_message_1 = "YOU CANNOT BUY ANY CURRENCY WITH THE SAME CURRENCY, {}-SAN".format(username)
-                error_message_2 = "YOU MAY ONLY BUY {} WITH OTHER CRYPTOCURRENCIES, {}-SAN".format(ct, username)
-                error_message_3 = "YOU MAY ONLY SELL BITCOIN TO BUY EUROS, {}-SAN".format(username)
-                error_message_4 = "YOU MUST INPUT AN AMOUNT IF YOU WISH TO PURCHASE A CURRENCY, {}-SAN".format(username)
-                error_message_4_5 = "YOU MUST NOT WRITE STRINGS IN THE SACRED QUANTITY FROM FIELD, {}-SAN".format(username)
+                success_calc_list =     ["A CALCULATED MOVE. VERY WISE, {}".format(username),
+                                            "THAT IS A FINE CHOICE, {}".format(username),
+                                            "THE OTHER SENSEIS DO NOT POSSESS YOUR KEEN INSIGHT, {}".format(username),
+                                            "YOU WILL SURELY AMASS GREAT WEALTH FROM THIS INVESTMENT, {}".format(username),
+                                            "A STEEP PRICE INDEED, BUT NOTHING VENTURED, NOTHING GAINED, {}".format(username)]
+                rand_index = random.randrange(len(success_calc_list))
+                success_calc_mssg = success_calc_list[rand_index]
+                error_message_1 = "YOU CANNOT BUY ANY CURRENCY WITH THE SAME CURRENCY, {}".format(username)
+                error_message_2 = "YOU MAY ONLY BUY {} WITH OTHER CRYPTOCURRENCIES, {}".format(ct, username)
+                error_message_3 = "YOU MAY ONLY SELL BITCOIN TO BUY EUROS, {}".format(username)
+                error_message_4 = "YOU MUST INPUT AN AMOUNT IF YOU WISH TO PURCHASE A CURRENCY, {}".format(username)
                 try:
                     
                     if cf == ct:
@@ -192,12 +204,10 @@ def katana():
                         flash(error_message_3)
                     elif float(u1) == 0:
                         flash(error_message_4)
-                    elif u1 == '':
-                        flash(error_message_4_5)
                     else:
                          quantity_to_price = calculateKatana(u1, cf, ct, my_api)
                          unit_price = calculateUnitPrice(u1, cf, ct, my_api)
-                         flash(no_error_message)
+                         flash(success_calc_mssg)
 
                     return render_template('purchase.html', form = form, quantity_to_price=quantity_to_price, unit_price=unit_price)
 
@@ -217,17 +227,19 @@ def katana():
                 currency_query_from = querySQL("SELECT value FROM currencyvalues WHERE currency='{}'".format(cf))
                 av_bal_fromSTR = currency_query_from[0]['value']
                 av_bal_from = float(av_bal_fromSTR)
-                
+
                 u2 = calculateUnitPrice(u1, cf, ct, my_api)
                 tq = calculateKatana(u1, cf, ct, my_api)
 
-                error_message_5 = "YOU DO NOT POSSESS THE NECESSARY FUNDS IN {} TO COMPLETE THIS TRANSACTION, {}-SAN".format(cf, username)
+                error_message_5 = "YOU DO NOT POSSESS THE NECESSARY FUNDS IN {} TO COMPLETE THIS TRANSACTION, {}".format(cf, username)
+                error_message_6 = "SURELY, THE WISE {} WOULD NOT PURCHASE AN ITEM WITHOUT KNOWING ITS VALUE".format(username)
 
                 try:
 
-                    if av_bal_from < int(u1):
+                    if av_bal_from < float(u1):
                         flash(error_message_5)
-
+                    elif u2 == 0:
+                        flash(error_message_6)
                     else:
 
                         currency_query_to = querySQL("SELECT VALUE FROM CURRENCYVALUES WHERE currency='{}'".format(ct))
@@ -271,7 +283,7 @@ def katana():
                 
             return render_template('purchase.html', form = form, quantity_to_price=quantity_to_price, unit_price=unit_price)
 
-#   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #   #
+#   #   #   #   #   #   #   # KATANA ROUTES: INVESTMENT #   #   #   #   #   #   #   #   #   #   #
 
 '''Investment Page: 
                     1. Total Investment
@@ -281,18 +293,8 @@ def katana():
 @app.route('/investment', methods = ['GET'])
 def investment():
 
-    parameters=[]
-
-    # Total invested Euros
-    euro_invest_query = querySQL("SELECT SUM(quantity_from) FROM movements WHERE currency_from='EUR'", parameters)
-    if euro_invest_query[0] == {'SUM(quantity_from)': None}:
-        pass
-    else:
-        total_investSTR = euro_invest_query[0]['SUM(quantity_from)']
-        total_invest = float(total_investSTR)
-
-    # Trapped Value of Cryptocurrencies in Euros (upon purchase). Unused.
-    trapped_crypto_currency_query = querySQL("SELECT SUM(euro_value) FROM currencyvalues WHERE NOT currency='EUR'", parameters)
+    # Trapped Value of Cryptocurrencies in Euros (upon purchase).
+    trapped_crypto_currency_query = querySQL("SELECT SUM(euro_value) FROM currencyvalues WHERE NOT currency='EUR'")
     trapped_crypto_value = trapped_crypto_currency_query[0]['SUM(euro_value)']
     trapped_crypto_valueSTR = trapped_crypto_value
 
@@ -342,14 +344,14 @@ def investment():
 
     # La regla de tres
 
-    profit_or_loss = cryptokatana_final_investment_value - total_invest
+    profit_or_loss = cryptokatana_final_investment_value - trapped_crypto_value
     profit_lossSTR = profit_or_loss
 
     # Profit or loss message:
     
-    pol_message = profitorlossMssg(cryptokatana_final_investment_value, total_invest)
+    pol_message = profitorlossMssg(cryptokatana_final_investment_value, trapped_crypto_value)
 
-    return render_template('investment.html', cv=cryptokatana_final_investment_value, ti=total_investSTR, pol=profit_lossSTR, pol_message=pol_message)
+    return render_template('investment.html', cv=cryptokatana_final_investment_value, ti=trapped_crypto_valueSTR, pol=profit_lossSTR, pol_message=pol_message)
     
 
                 

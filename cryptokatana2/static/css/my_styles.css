@@ -28,6 +28,18 @@
     background-color: rgb(255, 221, 246);
 }
 
+.popup_from {
+    background-color: rgb(204, 136, 186);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color:rgb(255, 231, 244);
+    box-shadow: 3em;
+    text-align: center;
+    margin: 0em, 3em, 3em, 3em;
+    font-size: 30px;
+    border-color: rgb(196, 120, 175);
+    border-width: 3em;
+}
+
 .popup p {
     font-size: 1.2em;
     text-align: center;

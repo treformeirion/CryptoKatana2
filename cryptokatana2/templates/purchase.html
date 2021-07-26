@@ -18,29 +18,14 @@
             <tr>
                 {{ form.currency_from.label(class="wtflabels")}}
                 {{ form.currency_from(class="wtffields") }}
-                {% for error in form.currency_from.errors %}
-                    <p class="msg-err">
-                        {{ error }}
-                    </p>
-                {% endfor %}
             </tr>
             <tr>
                 {{ form.currency_to.label(class="wtflabels")}}
                 {{ form.currency_to(class="wtffields") }}
-                {% for error in form.currency_to.errors %}
-                    <p class="msg-err">
-                        {{ error }}
-                    </p>
-                {% endfor %}
             </tr>
             <tr>
                 {{ form.quantity_from.label(class="wtflabels")}}
                 {{ form.quantity_from(class="wtffields", placeholder="Input Quantity") }}
-                {% for error in form.quantity_from.errors %}
-                    <p class="msg-err">
-                        {{ error }}
-                    </p>
-                {% endfor %}
             </tr>
             <tr>
                 {{ form.calculate}}
@@ -53,15 +38,16 @@
             <tr>
                 {{ form.unit_price.label(class="wtflabels")}}
                 <span class="isDisabled">{{ '%0.7f'|format(unit_price|float) }}</span>
-                {% for error in form.unit_price.errors %}
-                    <p class="msg-err">
-                        {{ error }}
-                    </p>
-                {% endfor %}
             </tr>
             <tr id="">
                 {{ form.crypto_katana }}
             </tr>
         </fieldset>
+
+        {% for error in form.quantity_from.errors %}
+                    <p class="popup_from">
+                        {{ error }}
+                    </p>
+                {% endfor %}
 
 {% endblock %}

@@ -11,7 +11,7 @@
     </ul>
   </nav>
   <div class="container"></div>
-    <h1 class="katanaheading">CK Transactions</h1>
+    <h1 class="katanaheading">Katana Transactions</h1>
     <!--Table headers for each field in database-->
     <table>
         <thead>
@@ -31,10 +31,11 @@
                     <td>{{ movement.date }}</td>
                     <td>{{ movement.time }}</td>
                     <td>{{ movement.currency_from }}</td>
-                    <td>{{ movement.quantity_from }}</td>
+                    <td>{{ '%0.7f'|format(movement.quantity_from|float) }}</td>
                     <td>{{ movement.currency_to }}</td>
-                    <td>{{ movement.quantity_to }}</td>
-                    <td>{{ movement.unit_price }}</td>
+                    <td>{{ '%0.7f'|format(movement.quantity_to|float) }}</td>
+                    <td>{{ '%0.7f'|format(movement.unit_price|float) }}</td>
+                    
                 </tr>
             {% endif %}
         {% endfor%}
