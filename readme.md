@@ -20,7 +20,11 @@ Using the following link, login (or create an account and select the 'basic' pla
 
 https://pro.coinmarketcap.com/login/
 
-Assign the variable API_KEY in the routes.py to your APIKEY.
+Assign the variable my_api in the routes.py to your <APIKEY>.
+
+* **Run the application** 
+
+flask run
 
 * **Suggestions/Comments**
 
@@ -29,16 +33,6 @@ Assign the variable API_KEY in the routes.py to your APIKEY.
 -Review the currencyvalues table in the movements.db file. If you wish to subtract or add to the total amount of Euros, which is defaulted to 10000, feel free.
 
 -The username page is only used to personalize the error messages. Unfortunately, the code does not store names in the database and I do not know why. As it is not part of the project, I don't expect for it to count against me. If you can figure out why it doesn't store data, please let me know. In the meantime, if you want personalized errors, you will have to go into the database and change the name value manually.
-
-* **Run the application** 
-
-flask run
-
-# Insights
-
-You cannot store a float value in a database because it will be transformed into binary and therefore become inaccurate and useless immediately upon storage.
-
-You should definitely work on the code before the css.
 
 # Developer
 
