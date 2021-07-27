@@ -9,7 +9,8 @@ import random
 
 # Access the api by providing an api key.
 
-my_api = '65bcaa07-93bc-428d-a65e-6d2dbe67eb79'
+my_api = '<INSERT YOUR API KEY HERE>'
+
 
 #   #   #   #   #   #   #   # KATANA FUNCTIONS #   #   #   #   #   #   #   #   #   #   #
 
