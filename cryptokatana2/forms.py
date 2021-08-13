@@ -14,12 +14,12 @@ class MovementsForm(FlaskForm):
                                                                                 ('BNB','Binance (BNB)'), ('EOS', 'EOS'), ('XLM', 'Stellar (XLM)'), 
                                                                                 ('TRX', 'Tron (TRX)'), ('BTC', 'Bitcoin (BTC)'), ('XRP', 'Ripple (XRP)'), 
                                                                                 ('BCH', 'Bitcoin Cash (BCH)'), ('USDT', 'Tether (USDT)'), ('BSV', 'Bitcoin SV (BSV)'), 
-                                                                                ('ADA', 'Cardadno (ADA)')], description="Choose the currency you would like to conver into")
+                                                                                ('ADA', 'Cardadno (ADA)')], description="Choose the currency you would like to convert from")
     currency_to = SelectField('Currency To', validators = [DataRequired()], choices = [('EUR', 'Euro (EUR)'), ('ETH', 'Etherum (ETH)'), ('LTC','Litecoin (LTC)'),                                                                     
                                                                                 ('BNB','Binance (BNB)'), ('EOS', 'EOS'), ('XLM', 'Stellar (XLM)'), 
                                                                                 ('TRX', 'Tron (TRX)'), ('BTC', 'Bitcoin (BTC)'), ('XRP', 'Ripple (XRP)'), 
                                                                                 ('BCH', 'Bitcoin Cash (BCH)'), ('USDT', 'Tether (USDT)'), ('BSV', 'Bitcoin SV (BSV)'), 
-                                                                                ('ADA', 'Cardadno (ADA)')], description="Choose the currency you would like to conver into")
+                                                                                ('ADA', 'Cardadno (ADA)')], description="Choose the currency you would like to convert into")
     quantity_from = FloatField('Qty From', validators= [InputRequired()])
     quantity_to = FloatField('Qty To')
 
