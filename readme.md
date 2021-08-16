@@ -8,6 +8,8 @@ Classic Web Flask application: The project was created over several weeks on VCS
 
 - Created a cryptovalues page to simply display the total quantity of each cryptocurrency in the user's database.
 
+- Changed database name, cleaned up some dead html.
+
 * **Changelog 0.0.1**
 
 - As of 13/08/2021, Werkzeug could not successfully import url_encode in version 2.0.1. Fixed by retrograding flask and werkzeug versions in requirements.txt (now versions 1.1.2 and 0.16.1, respectively).
@@ -43,11 +45,9 @@ flask run
 
 * **Suggestions/Comments**
 
--Review the currencyvalues table in the movements.db file. If you wish to subtract or add to the total amount of Euros, which is defaulted to 10000, feel free.
+-Review the currencyvalues table in the movements.db file. If you wish to subtract or add to the total amount of Euros, which is defaulted to 1000000, feel free.
 
 -The username page is only used to personalize the error messages. Unfortunately, the code does not store names in the database and I do not know why. As it is not part of the project, I decided to stop wasting time on it. If you can figure out why it doesn't store data, please let me know. In the meantime, if you want personalized errors, you will have to go into the username table in movements.db and change the name value manually.
-
--Due to not wanting to rock the boat so late in the trip, I left the movements.db database as is. However, if I were to start again, I'd call it the "data.db" database. I will change this once the program has been evaluated.
 
 # Developer
 

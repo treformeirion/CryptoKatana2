@@ -58,7 +58,7 @@ def profitorlossMssg(crypto_value, total_invest):
 
 def querySQL(query, parameters=[]):
 
-    connection = sqlite3.connect("movements.db")
+    connection = sqlite3.connect("datatables.db")
     cur = connection.cursor()
     cur.execute(query, parameters)
     keys = cur.description
@@ -77,7 +77,7 @@ def querySQL(query, parameters=[]):
 
 def modifySQL(query, parameters=[]):
 
-    connection = sqlite3.connect("movements.db")
+    connection = sqlite3.connect("datatables.db")
     cur = connection.cursor()
     cur.execute(query, parameters)
     connection.commit()
@@ -87,7 +87,7 @@ def modifySQL(query, parameters=[]):
 
 def modifySQL2(query):
 
-    connection = sqlite3.connect("movements.db")
+    connection = sqlite3.connect("datatables.db")
     cur = connection.cursor()
     cur.executescript(query)
     connection.commit()
