@@ -4,6 +4,10 @@ Bootcamp Zero - IV Edition Final Project | KeepCoding
 
 Classic Web Flask application: The project was created over several weeks on VCS, written in Python, using the Flask micro web framework.
 
+* **Changelog 0.0.2**
+
+- Created a cryptovalues page to simply display the total quantity of each cryptocurrency in the user's database.
+
 * **Changelog 0.0.1**
 
 - As of 13/08/2021, Werkzeug could not successfully import url_encode in version 2.0.1. Fixed by retrograding flask and werkzeug versions in requirements.txt (now versions 1.1.2 and 0.16.1, respectively).
