@@ -9,7 +9,7 @@ import random
 
 # Access the api by providing an api key.
 
-my_api = '<INSERT YOUR API KEY HERE>'
+my_api = '65bcaa07-93bc-428d-a65e-6d2dbe67eb79'
 
 
 #   #   #   #   #   #   #   # KATANA FUNCTIONS #   #   #   #   #   #   #   #   #   #   #
@@ -287,6 +287,25 @@ def katana():
                     
                 return render_template('purchase.html', form = form, quantity_to_price=quantity_to_price, unit_price=unit_price)
 
+
+#   #   #   #   #   #   #   # KATANA ROUTES: CRYPTOVALUES #   #   #   #   #   #   #   #   #   #   #
+
+'''Cryptocurrency Values Page:
+                    1. Cryptocurrency Values Table'''
+
+@app.route('/cryptovalues', methods = ['GET'])
+def cryptovalues():
+    try:
+        currencyvaluesq = querySQL("SELECT * FROM currencyvalues WHERE 1=1")
+        return render_template('cryptovalues.html', currencyvalues = currencyvaluesq)
+
+    except sqlite3.Error as the_error:
+                        print("Error in SQL INSERT: ", the_error)
+                        flash("There has been an issue with the database. The samurai are comitting sepukku in shame", "error")
+                        pol_mess_error = "The samurais do not have your currency values on hand. It is a day of mourning."
+                        return render_template('cryptovalues.html')
+
+
 #   #   #   #   #   #   #   # KATANA ROUTES: INVESTMENT #   #   #   #   #   #   #   #   #   #   #
 
 '''Investment Page: 
@@ -297,81 +316,92 @@ def katana():
 @app.route('/investment', methods = ['GET'])
 def investment():
 
-    # Total invested Euros (This code is ugly like a foot, but it works.)
+    try:
+    
 
-    euro_invest_query = querySQL("SELECT SUM(quantity_from) FROM movements WHERE currency_from='EUR'")
-    euro_return_query = querySQL("SELECT SUM(quantity_to) FROM movements WHERE currency_to='EUR'")
+        # Total invested Euros (This code is ugly like a foot, but it works.)
 
-    if euro_invest_query[0] == {'SUM(quantity_from)': None}:
-        total_euro_invest = 0
-        total_euro_investSTR = '0'
-    else:
-        total_euro_investSTR = euro_invest_query[0]['SUM(quantity_from)']
-        total_euro_invest = float(total_euro_investSTR)
+        euro_invest_query = querySQL("SELECT SUM(quantity_from) FROM movements WHERE currency_from='EUR'")
+        euro_return_query = querySQL("SELECT SUM(quantity_to) FROM movements WHERE currency_to='EUR'")
 
-    if euro_return_query[0] == {'SUM(quantity_to)': None}:
-        total_euro_return = 0
-        total_euro_returnSTR = '0'
-    else:
-        total_euro_returnSTR = euro_return_query[0]['SUM(quantity_to)']
-        total_euro_return = float(total_euro_returnSTR)
-
-    final_euro_invest = (total_euro_invest-total_euro_return)
-
-    # Current value of Cryptocurrencies
-   
-    crypto_dict_1 = {"EUR": 0.0, "ETH": 0.0, "LTC": 0.0, "BNB": 0.0, "EOS": 0.0, "XLM": 0.0, "TRX": 0.0, "BTC": 0.0, "XRP": 0.0, "BCH": 0.0, "USDT": 0.0, "BSV": 0.0, "ADA": 0.0}
-    crypto_dict_2 = {"EUR": 0.0, "ETH": 0.0, "LTC": 0.0, "BNB": 0.0, "EOS": 0.0, "XLM": 0.0, "TRX": 0.0, "BTC": 0.0, "XRP": 0.0, "BCH": 0.0, "USDT": 0.0, "BSV": 0.0, "ADA": 0.0}
-
-    # This for loop jsonifies the code.
-
-    i = 0
-    for ckey in crypto_dict_1:
-        if len(crypto_dict_1) >= i:
-            iterate_a_crypto = querySQL("SELECT value FROM currencyvalues WHERE currency='{}'".format(ckey))
-            crypto_value = iterate_a_crypto[0]['value']
-            if ckey != "EUR":
-                crypto_dict_2.update({ckey:crypto_value})
-            else:
-                pass
+        if euro_invest_query[0] == {'SUM(quantity_from)': None}:
+            total_euro_invest = 0
+            total_euro_investSTR = '0'
         else:
-            pass
-        i += 1
+            total_euro_investSTR = euro_invest_query[0]['SUM(quantity_from)']
+            total_euro_invest = float(total_euro_investSTR)
 
-    # Here, the crypto dictionary pops the EUR so that it doesn't iterate over an empty list:
+        if euro_return_query[0] == {'SUM(quantity_to)': None}:
+            total_euro_return = 0
+            total_euro_returnSTR = '0'
+        else:
+            total_euro_returnSTR = euro_return_query[0]['SUM(quantity_to)']
+            total_euro_return = float(total_euro_returnSTR)
 
-    crypto_dict_2.pop("EUR")
+        final_euro_invest = (total_euro_invest-total_euro_return)
 
-    # Returns the trapped value of each crypto in the database, and calculates its current value against the euro.
+        # Current value of Cryptocurrencies
+    
+        crypto_dict_1 = {"EUR": 0.0, "ETH": 0.0, "LTC": 0.0, "BNB": 0.0, "EOS": 0.0, "XLM": 0.0, "TRX": 0.0, "BTC": 0.0, "XRP": 0.0, "BCH": 0.0, "USDT": 0.0, "BSV": 0.0, "ADA": 0.0}
+        crypto_dict_2 = {"EUR": 0.0, "ETH": 0.0, "LTC": 0.0, "BNB": 0.0, "EOS": 0.0, "XLM": 0.0, "TRX": 0.0, "BTC": 0.0, "XRP": 0.0, "BCH": 0.0, "USDT": 0.0, "BSV": 0.0, "ADA": 0.0}
 
-    t = 0
-    evalue = "EUR"
-    invest_list = []
-    if len(crypto_dict_2) >= t:
-        for crypto in crypto_dict_2:
-            cvalue = crypto_dict_2[crypto]
-            fcvalue = float(cvalue)
-            if fcvalue != 0:
-                euro_value_in_crypto = calculateKatana(fcvalue, crypto, evalue, my_api)
-                invest_list.append(euro_value_in_crypto)
+        # This for loop jsonifies the code.
+
+        i = 0
+        for ckey in crypto_dict_1:
+            if len(crypto_dict_1) >= i:
+                iterate_a_crypto = querySQL("SELECT value FROM currencyvalues WHERE currency='{}'".format(ckey))
+                crypto_value = iterate_a_crypto[0]['value']
+                if ckey != "EUR":
+                    crypto_dict_2.update({ckey:crypto_value})
+                else:
+                    pass
             else:
                 pass
-        t += 1
+            i += 1
 
-    # Adds up all of the cryptocurrencies in their current value
+        # Here, the crypto dictionary pops the EUR so that it doesn't iterate over an empty list:
 
-    cryptokatana_final_investment_value = sum(invest_list)
+        crypto_dict_2.pop("EUR")
 
-    # La regla de tres
+        # Returns the trapped value of each crypto in the database, and calculates its current value against the euro.
 
-    profit_or_loss = cryptokatana_final_investment_value - final_euro_invest
-    profit_lossSTR = profit_or_loss
+        t = 0
+        evalue = "EUR"
+        invest_list = []
+        if len(crypto_dict_2) >= t:
+            for crypto in crypto_dict_2:
+                cvalue = crypto_dict_2[crypto]
+                fcvalue = float(cvalue)
+                if fcvalue != 0:
+                    euro_value_in_crypto = calculateKatana(fcvalue, crypto, evalue, my_api)
+                    invest_list.append(euro_value_in_crypto)
+                else:
+                    pass
+            t += 1
 
-    # Profit or loss message:
-    
-    pol_message = profitorlossMssg(cryptokatana_final_investment_value, final_euro_invest)
+        # Adds up all of the cryptocurrencies in their current value
 
-    return render_template('investment.html', cv=cryptokatana_final_investment_value, fei=final_euro_invest, pol=profit_lossSTR, pol_message=pol_message)
-    
+        cryptokatana_final_investment_value = sum(invest_list)
 
-                
+        # La regla de tres
+
+        profit_or_loss = cryptokatana_final_investment_value - final_euro_invest
+        profit_lossSTR = profit_or_loss
+
+        # Profit or loss message:
+        
+        pol_message = profitorlossMssg(cryptokatana_final_investment_value, final_euro_invest)
+
+        return render_template('investment.html', cv=cryptokatana_final_investment_value, fei=final_euro_invest, pol=profit_lossSTR, pol_message=pol_message)
+
+    except sqlite3.Error as the_error:
+                        print("Error in SQL INSERT: ", the_error)
+                        flash("There has been an issue with the katana calculations. The samurai are comitting sepukku in shame", "error")
+                        cv_error = 0
+                        fei_error = 0
+                        pol_error = 0
+                        pol_mess_error = "The samurais have no idea how much you are worth. You are safe...this time."
+                        return render_template('investment.html', cv=cv_error, fei=fei_error, pol=pol_error, pol_message=pol_mess_error)
+
+                    

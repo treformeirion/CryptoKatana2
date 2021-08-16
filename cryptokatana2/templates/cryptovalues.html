@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Katana Movements{% endblock %}
+
+{% block content %}
+<nav class="shadowed nav" >
+    <ul>
+        <li><span class="isActive"><a href="/movements">Transactions</a></span</li>
+        <li><span class="isActive"><a href="/purchase">Purchase</a></span</li>
+        <li><span class="isDisabled"><a href="/cryptovalues">Crypto Values</a></span</li>
+        <li><span class="isActive"><a href="/investment">Investment</a></span</li>
+    </ul>
+  </nav>
+  <div class="container"></div>
+    <h1 class="katanaheading">Cryptocurrency Values</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Crypto</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+            {% for values in currencyvalues %}
+            <tr>
+                <td>{{ values.currency }}</td>
+                <td>{{ '%0.7f'|format(values.value|float) }}</td>
+            </tr>
+            {% endfor %}
+    </table>
+</a>
+{% endblock %}
