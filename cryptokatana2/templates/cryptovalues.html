@@ -3,6 +3,7 @@
 {% block title %}Katana Movements{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" type= "text/css" href="{{ url_for('static', filename='css/investment.css') }}">
 <nav class="shadowed nav" >
     <ul>
         <li><span class="isActive"><a href="/movements">Transactions</a></span</li>
@@ -10,8 +11,8 @@
         <li><span class="isDisabled"><a href="/cryptovalues">Crypto Values</a></span</li>
         <li><span class="isActive"><a href="/investment">Investment</a></span</li>
     </ul>
-  </nav>
-  <div class="container"></div>
+</nav>
+<div class="container">
     <h1 class="katanaheading">Cryptocurrency Values</h1>
     <table>
         <thead>
@@ -27,5 +28,5 @@
             </tr>
             {% endfor %}
     </table>
-</a>
+</div>
 {% endblock %}
